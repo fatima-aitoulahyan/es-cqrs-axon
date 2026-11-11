@@ -1,5 +1,6 @@
 package org.example.eventsourcingcqrsaxon.commande.aggregates;
 
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -11,6 +12,7 @@ import org.example.eventsourcingcqrsaxon.events.AccountCreatedEvent;
 import org.example.eventsourcingcqrsaxon.enums.AccountStatus;
 
 @Aggregate
+@Slf4j
 public class AccountAggregate {
 
     @AggregateIdentifier
@@ -22,13 +24,13 @@ public class AccountAggregate {
 
     private AccountStatus status;
 
-    // Constructeur requis par Axon
     public AccountAggregate() {
     }
 
-    // Handler de création du compte
     @CommandHandler
     public AccountAggregate(AddAccountCommand command) {
+        log.info("************* AddAccountCommand Receved *******");
+
 
         if (command.getInitialBalance() < 0) {
             throw new IllegalArgumentException(
@@ -45,9 +47,10 @@ public class AccountAggregate {
                 )
         );
     }
-    
+
     @EventSourcingHandler
     public void on(AccountCreatedEvent event) {
+        log.info("************* AccountCreatedEvent    *******");
 
         this.id = event.getAccountId();
         this.balance = event.getInitialBalance();
