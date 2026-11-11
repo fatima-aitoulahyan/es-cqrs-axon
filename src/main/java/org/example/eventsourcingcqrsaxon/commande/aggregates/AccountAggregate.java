@@ -8,8 +8,10 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import org.example.eventsourcingcqrsaxon.commande.commands.AddAccountCommand;
+import org.example.eventsourcingcqrsaxon.commande.commands.CreditAccountCommand;
 import org.example.eventsourcingcqrsaxon.events.AccountCreatedEvent;
 import org.example.eventsourcingcqrsaxon.enums.AccountStatus;
+import org.example.eventsourcingcqrsaxon.events.AccountCreditedEvent;
 
 @Aggregate
 @Slf4j
@@ -47,6 +49,27 @@ public class AccountAggregate {
                 )
         );
     }
+    @CommandHandler
+    public void CreditAccountAggregate(CreditAccountCommand command) {
+        log.info("************* CreditAccountAggregate Receved *******");
+        if(!status.equals(AccountStatus.ACTIVATED)) throw new RuntimeException("Account not activated");
+
+
+        if (command.getAmount() < 0) {
+                throw new IllegalArgumentException(
+                        "Amount must be positive"
+                );
+            }
+
+        AggregateLifecycle.apply(
+                new AccountCreditedEvent(
+                        command.getId(),
+                        command.getAmount(),
+                        AccountStatus.CREATED,
+                        command.getCurrency()
+                )
+        );
+    }
 
     @EventSourcingHandler
     public void on(AccountCreatedEvent event) {
@@ -57,4 +80,15 @@ public class AccountAggregate {
         this.currency = event.getCurrency();
         this.status = AccountStatus.ACTIVATED;
     }
+
+    @EventSourcingHandler
+    public void on(AccountCreditedEvent event) {
+        log.info("************* AccountCreditedEvent    *******");
+
+        this.id = event.getAccountId();
+        this.balance = this.balance + event.getAmount();
+        this.currency = event.getCurrency();
+        this.status = AccountStatus.ACTIVATED;
+    }
+
 }
