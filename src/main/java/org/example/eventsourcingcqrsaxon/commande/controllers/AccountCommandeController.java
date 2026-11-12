@@ -4,8 +4,10 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.example.eventsourcingcqrsaxon.commande.commands.AddAccountCommand;
 import org.example.eventsourcingcqrsaxon.commande.commands.CreditAccountCommand;
+import org.example.eventsourcingcqrsaxon.commande.commands.DebitAccountCommand;
 import org.example.eventsourcingcqrsaxon.commande.dtos.AddNewAccountRequestDTO;
 import org.example.eventsourcingcqrsaxon.commande.dtos.CreditAccountRequestDTO;
+import org.example.eventsourcingcqrsaxon.commande.dtos.DebitAccountRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,15 @@ public class AccountCommandeController {
     @PostMapping("/credit")
     public CompletableFuture<String> creditAccount(@RequestBody CreditAccountRequestDTO requestDTO) {
         CompletableFuture<String> response = commandGateway.send(new CreditAccountCommand(
+                requestDTO.accountId(),
+                requestDTO.amount(),
+                requestDTO.currency()
+        ));
+        return response;
+    }
+    @PostMapping("/debit")
+    public CompletableFuture<String> debitAccount(@RequestBody DebitAccountRequestDTO requestDTO) {
+        CompletableFuture<String> response = commandGateway.send(new DebitAccountCommand(
                 requestDTO.accountId(),
                 requestDTO.amount(),
                 requestDTO.currency()

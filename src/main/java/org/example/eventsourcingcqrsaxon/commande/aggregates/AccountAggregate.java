@@ -9,9 +9,12 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import org.example.eventsourcingcqrsaxon.commande.commands.AddAccountCommand;
 import org.example.eventsourcingcqrsaxon.commande.commands.CreditAccountCommand;
+import org.example.eventsourcingcqrsaxon.commande.commands.DebitAccountCommand;
+import org.example.eventsourcingcqrsaxon.events.AccountActivatedEvent;
 import org.example.eventsourcingcqrsaxon.events.AccountCreatedEvent;
 import org.example.eventsourcingcqrsaxon.enums.AccountStatus;
 import org.example.eventsourcingcqrsaxon.events.AccountCreditedEvent;
+import org.example.eventsourcingcqrsaxon.events.AccountDebitedEvent;
 
 @Aggregate
 @Slf4j
@@ -48,25 +51,10 @@ public class AccountAggregate {
                         command.getCurrency()
                 )
         );
-    }
-    @CommandHandler
-    public void CreditAccountAggregate(CreditAccountCommand command) {
-        log.info("************* CreditAccountAggregate Receved *******");
-        if(!status.equals(AccountStatus.ACTIVATED)) throw new RuntimeException("Account not activated");
-
-
-        if (command.getAmount() < 0) {
-                throw new IllegalArgumentException(
-                        "Amount must be positive"
-                );
-            }
-
         AggregateLifecycle.apply(
-                new AccountCreditedEvent(
+                new AccountActivatedEvent(
                         command.getId(),
-                        command.getAmount(),
-                        AccountStatus.CREATED,
-                        command.getCurrency()
+                        AccountStatus.ACTIVATED
                 )
         );
     }
@@ -81,6 +69,28 @@ public class AccountAggregate {
         this.status = AccountStatus.ACTIVATED;
     }
 
+    @CommandHandler
+    public void CreditAccountAggregate(CreditAccountCommand command) {
+        log.info("************* CreditAccountAggregate Receved *******");
+        if(!status.equals(AccountStatus.ACTIVATED)) throw new RuntimeException("Account not activated");
+
+
+        if (command.getAmount() < 0) {
+            throw new IllegalArgumentException(
+                    "Amount must be positive"
+            );
+        }
+
+        AggregateLifecycle.apply(
+                new AccountCreditedEvent(
+                        command.getId(),
+                        command.getAmount(),
+                        AccountStatus.CREATED,
+                        command.getCurrency()
+                )
+        );
+    }
+
     @EventSourcingHandler
     public void on(AccountCreditedEvent event) {
         log.info("************* AccountCreditedEvent    *******");
@@ -89,6 +99,38 @@ public class AccountAggregate {
         this.balance = this.balance + event.getAmount();
         this.currency = event.getCurrency();
         this.status = AccountStatus.ACTIVATED;
+    }
+
+    @CommandHandler
+    public void DebitAccountAggregate(DebitAccountCommand command) {
+        log.info("************* DebitAccountAggregate Receved *******");
+        if(!status.equals(AccountStatus.ACTIVATED)) throw new RuntimeException("Account not activated");
+        if(this.balance< command.getAmount()) throw new RuntimeException("Balance is not suffisant ");
+
+
+        if (command.getAmount() < 0) {
+            throw new IllegalArgumentException(
+                    "Amount must be positive"
+            );
+        }
+
+        AggregateLifecycle.apply(
+                new AccountDebitedEvent(
+                        command.getId(),
+                        command.getAmount(),
+                        AccountStatus.CREATED,
+                        command.getCurrency()
+                )
+        );
+    }
+
+    @EventSourcingHandler
+    public void on(AccountDebitedEvent event) {
+        log.info("************* AccountDebitedEvent    *******");
+
+        this.id = event.getAccountId();
+        this.balance = this.balance - event.getAmount();
+        this.currency = event.getCurrency();
     }
 
 }
