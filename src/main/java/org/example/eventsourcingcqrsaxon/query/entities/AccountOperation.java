@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.eventsourcingcqrsaxon.enums.OperationType;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -14,7 +15,7 @@ import java.util.Date;
 public class AccountOperation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date createdAt;
+    private Instant createdAt;
     private double amount;
     @Enumerated(EnumType.STRING)
     private OperationType operationType;

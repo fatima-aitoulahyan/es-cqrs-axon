@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.eventsourcingcqrsaxon.enums.AccountStatus;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -19,6 +20,6 @@ public class Account {
     private String currency;
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
-    private Date createdAt;
+    private Instant createdAt;
 
 }
