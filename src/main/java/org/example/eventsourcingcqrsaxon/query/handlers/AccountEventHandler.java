@@ -2,6 +2,7 @@ package org.example.eventsourcingcqrsaxon.query.handlers;
 
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.example.eventsourcingcqrsaxon.commande.commands.UpdateAccountStatusCommand;
 import org.example.eventsourcingcqrsaxon.enums.OperationType;
 import org.example.eventsourcingcqrsaxon.events.*;
@@ -18,6 +19,7 @@ public class AccountEventHandler {
     private AccountRepository accountRepository;
     @Autowired
     private OperationAccountRepository operationAccountRepository;
+    private QueryUpdateEmitter queryUpdateEmitter;
 
     @EventHandler
     public void on(AccountCreatedEvent event , EventMessage eventMessage){
@@ -60,6 +62,7 @@ public class AccountEventHandler {
         operationAccountRepository.save(accountOperation);
         account.setBalance(account.getBalance() - event.getAmount());
         accountRepository.save(account);
+        queryUpdateEmitter.emit(e->true,accountOperation);
     }
     @EventHandler
     public void on(AccountCreditedEvent event , EventMessage eventMessage){
@@ -74,5 +77,7 @@ public class AccountEventHandler {
         operationAccountRepository.save(accountOperation);
         account.setBalance(account.getBalance() + event.getAmount());
         accountRepository.save(account);
+        queryUpdateEmitter.emit(e->true,accountOperation);
+
     }
 }

@@ -7,6 +7,7 @@ import org.example.eventsourcingcqrsaxon.query.entities.Account;
 import org.example.eventsourcingcqrsaxon.query.entities.AccountOperation;
 import org.example.eventsourcingcqrsaxon.query.queries.GetAccountStatementQuery;
 import org.example.eventsourcingcqrsaxon.query.queries.GetAllAccountsQuery;
+import org.example.eventsourcingcqrsaxon.query.queries.WatchEventQuery;
 import org.example.eventsourcingcqrsaxon.query.repository.AccountRepository;
 import org.example.eventsourcingcqrsaxon.query.repository.OperationAccountRepository;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,11 @@ public class AccountQueryHandler {
         Account account = accountRepository.findById(query.getAccountId()).orElseThrow();
         List<AccountOperation> operations=operationAccountRepository.findByAccountId(account.getId());
         return new AccountStatementResponseDTO(account,operations);
+    }
+
+    @QueryHandler
+    public AccountOperation on(WatchEventQuery query){
+        return AccountOperation.builder().build();
     }
 
 
