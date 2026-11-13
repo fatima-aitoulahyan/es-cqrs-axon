@@ -2,9 +2,12 @@ package org.example.eventsourcingcqrsaxon.query.controllers;
 
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.example.eventsourcingcqrsaxon.query.dtos.AccountStatementResponseDTO;
 import org.example.eventsourcingcqrsaxon.query.entities.Account;
+import org.example.eventsourcingcqrsaxon.query.queries.GetAccountStatementQuery;
 import org.example.eventsourcingcqrsaxon.query.queries.GetAllAccountsQuery;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +27,14 @@ public class AccountQueryController {
         CompletableFuture<List<Account>> response = queryGateway.query(
                 new GetAllAccountsQuery(),
                 ResponseTypes.multipleInstancesOf(Account.class));
+        return response;
+
+    }
+    @GetMapping("/accountStatement{accountId}")
+    public CompletableFuture<AccountStatementResponseDTO>  getAccountStatement(@PathVariable String accountId){
+        CompletableFuture<AccountStatementResponseDTO> response = queryGateway.query(
+                new GetAccountStatementQuery(accountId),
+                ResponseTypes.instanceOf(AccountStatementResponseDTO.class));
         return response;
 
     }
