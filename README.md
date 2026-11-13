@@ -75,7 +75,7 @@ Le pattern CQRS sépare les responsabilités :
 
 L'architecture suit les principes CQRS et Event Sourcing. Les trois bus (Command Bus, Query Bus, Event Bus) assurent le routage des messages entre les composants.
 
-![Architecture CQRS et Event Sourcing avec Axon](docs/images/img12.png)
+![Architecture CQRS et Event Sourcing avec Axon](/images/img12.png)
 
 ### Flux côté commande
 
@@ -120,7 +120,7 @@ Le `QueryUpdateEmitter` pousse chaque nouvelle opération (crédit ou débit) ve
 
 ```
 es-cqrs-axon
-├── docs
+├── 
 │   └── images                      # Captures d'écran utilisées dans ce README
 ├── src
 │   └── main
@@ -290,7 +290,7 @@ Le TP procède par étapes :
 
 L'ensemble des endpoints est exposé et testable via Swagger UI.
 
-![Endpoints exposés dans Swagger UI](docs/images/10.png)
+![Endpoints exposés dans Swagger UI](/images/10.png)
 
 ### 11.2 Côté commande
 
@@ -298,19 +298,19 @@ L'ensemble des endpoints est exposé et testable via Swagger UI.
 
 La requête `POST /commands/accounts/add` retourne l'identifiant du compte créé.
 
-![Création d'un compte](docs/images/img1.png)
+![Création d'un compte](/images/img1.png)
 
 #### Crédit d'un compte
 
-![Crédit d'un compte](docs/images/img4.png)
+![Crédit d'un compte](/images/img4.png)
 
 #### Débit d'un compte
 
-![Débit d'un compte](docs/images/5.png)
+![Débit d'un compte](/images/5.png)
 
 #### Modification du statut d'un compte
 
-![Mise à jour du statut d'un compte](docs/images/img5.png)
+![Mise à jour du statut d'un compte](/images/img5.png)
 
 ### 11.3 Côté lecture
 
@@ -318,19 +318,19 @@ La requête `POST /commands/accounts/add` retourne l'identifiant du compte cré�
 
 L'endpoint `GET /query/accounts/all` renvoie les comptes projetés dans la base de lecture.
 
-![Liste de tous les comptes](docs/images/img7.png)
+![Liste de tous les comptes](/images/img7.png)
 
 #### Relevé d'un compte
 
 L'endpoint `GET /query/accounts/accountStatement{accountId}` renvoie le compte et l'historique de ses opérations.
 
-![Relevé d'un compte](docs/images/img8.png)
+![Relevé d'un compte](/images/img8.png)
 
 #### Base de lecture (PostgreSQL)
 
 La table `account` de la base de lecture, consultée avec PgAdmin.
 
-![Table account dans PgAdmin](docs/images/img6.png)
+![Table account dans PgAdmin](/images/img6.png)
 
 ## 12. Évolution de l'Event Store
 
@@ -338,23 +338,23 @@ La table `account` de la base de lecture, consultée avec PgAdmin.
 
 Dans la première phase, les événements sont enregistrés dans la table `DOMAIN_EVENT_ENTRY` d'une base H2 en mémoire (`jdbc:h2:mem:account-db`). Les données sont perdues à chaque redémarrage.
 
-![Table DOMAIN_EVENT_ENTRY dans la console H2](docs/images/img2.png)
+![Table DOMAIN_EVENT_ENTRY dans la console H2](/images/img2.png)
 
 ### 12.2 Event Store PostgreSQL
 
 Dans la deuxième phase, les événements sont persistés dans PostgreSQL, ce qui permet de conserver l'historique entre les redémarrages.
 
-![Table domain_event_entry dans PostgreSQL](docs/images/img13.png)
+![Table domain_event_entry dans PostgreSQL](/images/img13.png)
 
 ### 12.3 Axon Server
 
 Dans la phase finale, la gestion de l'Event Store, le dispatching des commandes, des événements et des requêtes sont délégués à **Axon Server**. Le microservice s'y connecte via gRPC et apparaît dans la vue d'ensemble de la console.
 
-![Vue d'ensemble d'Axon Server](docs/images/img9.png)
+![Vue d'ensemble d'Axon Server](/images/img9.png)
 
 L'onglet **Event Store > Search** permet de consulter les événements d'un agrégat dans l'ordre de leur séquence : `AccountCreatedEvent`, `AccountActivatedEvent`, `AccountDebitedEvent`, puis `AccountCreditedEvent`.
 
-![Événements dans l'Event Store d'Axon Server](docs/images/img11.png)
+![Événements dans l'Event Store d'Axon Server](/images/img11.png)
 
 > Axon Server s'exécute ici en mode non enregistré (accès d'essai limité à 12 heures). Un enregistrement sur platform.axoniq.io est nécessaire pour un usage prolongé.
 
